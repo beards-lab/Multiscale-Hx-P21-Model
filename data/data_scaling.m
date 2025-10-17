@@ -4,11 +4,11 @@ clear all
 addpath raw_data\smoothed_data\
 
 condition_flags = {'Hx f'};
-load Hx62_LV_smooth.mat 
+load Hx56_LV_reshape.mat 
 V_LV_avg = V_ven_avg; V_LV_stack = V_ven_stack; P_LV_avg = P_ven_avg; P_LV_stack = P_ven_stack; T_LV = T;
-load Hx62_RV_smooth.mat
+load Hx56_RV_reshape.mat
 V_RV_avg = V_ven_avg; V_RV_stack = V_ven_stack; P_RV_avg = P_ven_avg; P_RV_stack = P_ven_stack; T_RV = T;
-filename = 'Hx_62_f_data.mat';
+filename = 'Hx56_data.mat';
 
 %% Data 
 V_LV_avg_min = min(V_LV_avg); V_RV_avg_min = min(V_RV_avg); 
@@ -36,6 +36,17 @@ V_RV_mean = V_RV_norm*SV_common + V_RV_avg_min;
 V_RV_mult = V_RV_stack_norm*SV_common + V_RV_avg_min; 
 
 SV = SV_common; 
+
+%% ESV adjustment 
+if min(V_RV_mean) < 0 && min(V_LV_mean)> 0
+    ESV_add = min(V_LV_mean)/3;
+    V_RV_mean =  V_RV_mean + (0 - min(V_RV_mean))+ min(V_LV_mean) + ESV_add; 
+elseif min(V_LV_mean) < 0 && min(V_RV_mean)> 0
+    ESV_add = 0.7*min(V_RV_mean);
+    V_LV_mean = V_LV_mean + (0-min(V_LV_mean)) + ESV_add;
+elseif min(V_LV_mean) < 0 && min(V_RV_mean)< 0
+    print('two negative volumes')
+end
 
 %% Pressure adjustment 
 for i_exp = 1

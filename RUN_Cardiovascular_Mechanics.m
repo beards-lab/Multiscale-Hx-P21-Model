@@ -8,11 +8,11 @@ clear;clc;
 % Flags
 flag_optpars = 1;      % = 1 will run the optimized parameters, else nominal  
 flag_save_figures = 0; % = 1 will save the figures as .eps and .png files
-flag_save_outputs = 0; % = 1 will save the outputs as .mat files 
+flag_save_outputs = 1; % = 1 will save the outputs as .mat files 
 
 % Select animals to run 
-selected_nx = [11 12 51 52 54 55 56];
-selected_hx = [1, 4, 5, 7, 8, 9, 10, 57, 58, 59, 61, 62];  
+selected_nx = [54];
+selected_hx = [8];  
 
 % Animal information 
 all_nx_animal_ids = [11 12 51 52 54 55 56];
@@ -59,7 +59,7 @@ for n = 1:length(selected_nx)
     nx_or_hx_flag = 0; % = 0 for nx, = 1 for hx
 
     % Load data 
-    table = readtable('P21_data_input.xlsx','PreserveVariableNames',true);
+    table = readtable('MJC_P21_data_input.xlsx','PreserveVariableNames',true);
     data = make_datastructure_P21(animal_id,table);
     data.eta_Vtot = 1;
     data.gpars.ODE_TOL = ODE_TOL;      
@@ -68,10 +68,10 @@ for n = 1:length(selected_nx)
     data.Pi_cyto         = Pi; 
 
     % Get parameters 
-    optpars_filename = sprintf('opt_pars_Nx%d.mat', animal_id);
+    optpars_filename = sprintf('opt_pars_Nx%d_NEW_largebounds_2025.mat', animal_id);
     if exist(optpars_filename,'file') == 2 && flag_optpars == 1 
         load(optpars_filename);
-        pars = pars_opt;
+        pars(INDMAP) = xopt;
     else
         [pars,~,~,data] = parameters_Nx(data);
     end
@@ -107,7 +107,7 @@ for n = 1:length(selected_hx)
     nx_or_hx_flag = 1; % = 0 for nx, = 1 for hx
 
     % Load data 
-    table = readtable('P21_data_input.xlsx','PreserveVariableNames',true);
+    table = readtable('MJC_P21_data_input.xlsx','PreserveVariableNames',true);
     data = make_datastructure_P21(animal_id,table);
     data.eta_Vtot = 1;
     data.gpars.ODE_TOL = ODE_TOL;      
@@ -117,10 +117,10 @@ for n = 1:length(selected_hx)
     data.hx_flag = 1; 
 
     % Get parameters 
-    optpars_filename = sprintf('opt_pars_Hx%d.mat', animal_id);
+    optpars_filename = sprintf('opt_pars_Hx%d_NEW_largebounds_2025.mat', animal_id);
     if exist(optpars_filename,'file') == 2 && flag_optpars == 1 
         load(optpars_filename);
-        pars = pars_opt;
+        pars(INDMAP) = xopt;
     else
         [pars,~,~,data] = parameters_Hx(data);
     end
