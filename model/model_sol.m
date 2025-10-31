@@ -36,6 +36,11 @@ V_SV_u = fixpars(11);
 V_PA_u = fixpars(12); 
 V_PV_u = fixpars(13); 
 
+V_SA_u = 0;
+V_SV_u = 0; 
+V_PA_u = 0; 
+V_PV_u = 0; 
+
 % Compliance 
 C_SA = adjpars(1); 
 

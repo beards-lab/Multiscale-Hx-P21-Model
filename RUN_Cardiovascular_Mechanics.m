@@ -7,8 +7,8 @@ clear;clc;
 %% Initialization 
 % Flags
 flag_optpars = 1;      % = 1 will run the optimized parameters, else nominal  
-flag_save_figures = 0; % = 1 will save the figures as .eps and .png files
-flag_save_outputs = 1; % = 1 will save the outputs as .mat files 
+flag_save_figures = 1; % = 1 will save the figures as .eps and .png files
+flag_save_outputs = 0; % = 1 will save the outputs as .mat files 
 
 % Select animals to run 
 selected_nx = [54];
@@ -58,28 +58,59 @@ for n = 1:length(selected_nx)
     nx_label = nx_labels(loc);
     nx_or_hx_flag = 0; % = 0 for nx, = 1 for hx
 
-    % Load data 
-    table = readtable('MJC_P21_data_input.xlsx','PreserveVariableNames',true);
-    data = make_datastructure_P21(animal_id,table);
-    data.eta_Vtot = 1;
-    data.gpars.ODE_TOL = ODE_TOL;      
-    data.MgATP_cytoplasm = ATP; 
-    data.MgADP_cytoplasm = ADP; 
-    data.Pi_cyto         = Pi; 
+    % % Load data 
+    % table = readtable('MJC_P21_data_input.xlsx','PreserveVariableNames',true);
+    % data = make_datastructure_P21(animal_id,table);
+    % data.eta_Vtot = 1;
+    % data.gpars.ODE_TOL = ODE_TOL;      
+    % data.MgATP_cytoplasm = ATP; 
+    % data.MgADP_cytoplasm = ADP; 
+    % data.Pi_cyto         = Pi; 
 
     % Get parameters 
     optpars_filename = sprintf('opt_pars_Nx%d_NEW_largebounds_2025.mat', animal_id);
     if exist(optpars_filename,'file') == 2 && flag_optpars == 1 
-        load(optpars_filename);
-        pars(INDMAP) = xopt;
+        % avoid loading whole environment
+        optparamsfile = load(optpars_filename);
+        pars = optparamsfile.pars;
+        pars(optparamsfile.INDMAP) = optparamsfile.xopt;
+        data = optparamsfile.data;
     else
         [pars,~,~,data] = parameters_Nx(data);
     end
 
+    %% tweak params
+    pars = optparamsfile.pars;
+    data = optparamsfile.data;
+
+    data.fixpars(18) = 12;
+    % data.fixpars(10:13) = 0; % no ustressed volumes!
+    data.fixpars(27) = 1e1;
+    % data.fixpars(10) = 500/7.5;
+    epars = exp(pars);
+    epars(5) = 70;
+    % epars(3) = 0.2;
+    % epars(4) = 0.2;
+    % epars(7) = 0.01;
+    epars(6) = 30;
+
+    pars = log(epars);
+    
     % Run model 
     outputs = model_sol(pars,data);
+    %
+    figure(80085);clf;
+    subplot(1, 2, 1);hold on;
+    plot(outputs.time, outputs.stresses.passive.sigma_pas_LV, outputs.time, outputs.stresses.active.sigma_XB_LV, outputs.time, outputs.stresses.total.sigma_LV);
+    subplot(1, 2, 2);hold on;
+    plot(outputs.time, outputs.volumes.V_LV);
+    figure(8008135);clf;
+    subplot(2, 1, 1);
+    plot(outputs.time, outputs.volumes.V_LV, outputs.time, outputs.volumes.V_PV, outputs.time, outputs.volumes.V_PA);
+    subplot(2, 1, 2);
+    plot(outputs.time, outputs.pressures.P_LV, outputs.time, outputs.pressures.P_SV, outputs.time, outputs.pressures.P_SA, outputs.time, outputs.pressures.P_PV, outputs.time, outputs.pressures.P_PA, outputs.time, outputs.pressures.P_RV);
 
-    % Save outputs 
+    %% Save outputs 
     if flag_save_outputs == 1
         folder = fullfile(pwd,'outputs');
         filename = sprintf('outputs_Nx%d.mat', animal_id);
