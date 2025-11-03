@@ -12,8 +12,6 @@ function f = triseg(x,pars,data,init)
     f           - vector of equations for the root finder 
 %} 
 
-x = exp(x); 
-
 HR = data.HR; 
 
 fixpars = data.fixpars;
@@ -54,7 +52,7 @@ V_RV = init(9);
 %% Heart and sarcomere model 
 
 % Volume of spherical cap formed by midwall surface (m^3)
-Vm_LV  = -(pi / 6) * xm_LV  * (xm_LV^2  + 3 * ym^2); 
+Vm_LV  =  (pi / 6) * xm_LV  * (xm_LV^2  + 3 * ym^2); 
 Vm_SEP =  (pi / 6) * xm_SEP * (xm_SEP^2 + 3 * ym^2); 
 Vm_RV  =  (pi / 6) * xm_RV  * (xm_RV^2  + 3 * ym^2); 
 
@@ -64,7 +62,7 @@ Am_SEP = pi * (xm_SEP^2 + ym^2);
 Am_RV  = pi * (xm_RV^2  + ym^2); 
 
 % Curvature of midwall surface (m^(-1))
-Cm_LV  = -2 * xm_LV  / (xm_LV^2  + ym^2);
+Cm_LV  =  2 * xm_LV  / (xm_LV^2  + ym^2);
 Cm_SEP =  2 * xm_SEP / (xm_SEP^2 + ym^2);
 Cm_RV  =  2 * xm_RV  / (xm_RV^2  + ym^2);
 
@@ -94,14 +92,14 @@ Tm_SEP = (Vw_SEP * sigma_SEP / (2 * Am_SEP)) * (1 + (z_SEP^2)/3 + (z_SEP^4)/5);
 Tm_RV  = (Vw_RV  * sigma_RV  / (2 * Am_RV))  * (1 + (z_RV^2)/3  + (z_RV^4)/5);
 
 % Axial midwall tension component 
-Tx_LV  = - Tm_LV  * 2 * xm_LV  * ym / (xm_LV^2  + ym^2); 
+Tx_LV  =   Tm_LV  * 2 * xm_LV  * ym / (xm_LV^2  + ym^2); 
 Tx_SEP =   Tm_SEP * 2 * xm_SEP * ym / (xm_SEP^2 + ym^2); 
 Tx_RV  =   Tm_RV  * 2 * xm_RV  * ym / (xm_RV^2  + ym^2); 
 
 % Radial midwall tension component 
-Ty_LV  = Tm_LV  * (-xm_LV^2  + ym^2) / (xm_LV^2  + ym^2); 
-Ty_SEP = Tm_SEP * (-xm_SEP^2 + ym^2) / (xm_SEP^2 + ym^2); 
-Ty_RV  = Tm_RV  * (-xm_RV^2  + ym^2) / (xm_RV^2  + ym^2);
+Ty_LV  = Tm_LV  * (xm_LV^2  - ym^2) / (xm_LV^2  + ym^2); 
+Ty_SEP = Tm_SEP * (xm_SEP^2 - ym^2) / (xm_SEP^2 + ym^2); 
+Ty_RV  = Tm_RV  * (xm_RV^2  - ym^2) / (xm_RV^2  + ym^2);
 
 %% System of equations 
 

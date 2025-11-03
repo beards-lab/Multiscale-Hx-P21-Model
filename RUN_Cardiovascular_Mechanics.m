@@ -79,7 +79,7 @@ for n = 1:length(selected_nx)
         [pars,~,~,data] = parameters_Nx(data);
     end
 
-    %% tweak params
+    % tweak params
     pars = optparamsfile.pars;
     data = optparamsfile.data;
 
@@ -103,14 +103,14 @@ for n = 1:length(selected_nx)
     subplot(1, 2, 1);hold on;
     plot(outputs.time, outputs.stresses.passive.sigma_pas_LV, outputs.time, outputs.stresses.active.sigma_XB_LV, outputs.time, outputs.stresses.total.sigma_LV);
     subplot(1, 2, 2);hold on;
-    plot(outputs.time, outputs.volumes.V_LV);
+    plot(outputs.time, outputs.lengths.Lsc_LV - 1.51);
     figure(8008135);clf;
     subplot(2, 1, 1);
     plot(outputs.time, outputs.volumes.V_LV, outputs.time, outputs.volumes.V_PV, outputs.time, outputs.volumes.V_PA);
     subplot(2, 1, 2);
     plot(outputs.time, outputs.pressures.P_LV, outputs.time, outputs.pressures.P_SV, outputs.time, outputs.pressures.P_SA, outputs.time, outputs.pressures.P_PV, outputs.time, outputs.pressures.P_PA, outputs.time, outputs.pressures.P_RV);
 
-    %% Save outputs 
+    % Save outputs 
     if flag_save_outputs == 1
         folder = fullfile(pwd,'outputs');
         filename = sprintf('outputs_Nx%d.mat', animal_id);
@@ -126,7 +126,7 @@ for n = 1:length(selected_nx)
 end
 end
 
-% Hx 
+%% Hx 
 if exist('selected_hx','var')
     hfig4b = figure(401); clf;
     hfig4d = figure(403); clf;

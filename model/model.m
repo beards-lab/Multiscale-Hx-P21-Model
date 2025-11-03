@@ -79,8 +79,10 @@ L_hbare = fixpars(16); % Length of bare region of thick filament
 L_thin  = fixpars(17); % Length of thin filament
 
 % Passive 
-k_passive_LV = fixpars(18); % kPa / um % for mean SHAM rat and TAC rat 1
-k_passive_RV = fixpars(19); % kPa / um % for mean SHAM rat and TAC rat 1
+% k_passive_LV = fixpars(18); % kPa / um % for mean SHAM rat and TAC rat 1
+% k_passive_RV = fixpars(19); % kPa / um % for mean SHAM rat and TAC rat 1
+k_passive_LV = 1.3161e+04; % kPa / um % for mean SHAM rat and TAC rat 1
+k_passive_RV = 1.4874e+05; % kPa / um % for mean SHAM rat and TAC rat 1
 gamma   = fixpars(20); 
 
 % Active 
@@ -216,7 +218,7 @@ end
 %% Heart model
 
 % Volume of spherical cap formed by midwall surface (cm^3)
-Vm_LV  = -(pi / 6) * xm_LV  * (xm_LV^2  + 3 * ym^2); 
+Vm_LV  = (pi / 6) * xm_LV  * (xm_LV^2  + 3 * ym^2); 
 Vm_SEP = (pi / 6) * xm_SEP * (xm_SEP^2 + 3 * ym^2); 
 Vm_RV  = (pi / 6) * xm_RV  * (xm_RV^2  + 3 * ym^2); 
 
@@ -226,7 +228,7 @@ Am_SEP = pi * (xm_SEP^2 + ym^2);
 Am_RV  = pi * (xm_RV^2  + ym^2); 
 
 % Curvature of midwall surface (cm^(-1))
-Cm_LV  = -2 * xm_LV  / (xm_LV^2  + ym^2);
+Cm_LV  =  2 * xm_LV  / (xm_LV^2  + ym^2);
 Cm_SEP =  2 * xm_SEP / (xm_SEP^2 + ym^2);
 Cm_RV  =  2 * xm_RV  / (xm_RV^2  + ym^2);
 
@@ -259,9 +261,9 @@ Ls_RV  = Lsref * exp(eps_RV);
 % sigma_pas_SEP_old = sigma_pas_SEP_0 + sigma_collagen_SEP;
 % sigma_pas_RV_old  = sigma_pas_RV_0  + sigma_collagen_RV;
 
-sigma_pas_LV  =  real(k_passive_LV * ((Ls_LV - Lsc0))^gamma); 
-sigma_pas_SEP =  real(k_passive_LV * ((Ls_SEP - Lsc0))^gamma); 
-sigma_pas_RV  =  real(k_passive_RV * ((Ls_RV - Lsc0))^gamma); 
+sigma_pas_LV  =  real(k_passive_LV * (Ls_LV/Lsc0 - 1)^gamma); 
+sigma_pas_SEP =  real(k_passive_LV * (Ls_SEP/Lsc0 - 1)^gamma); 
+sigma_pas_RV  =  real(k_passive_RV * (Ls_RV/Lsc0 - 1)^gamma); 
 
 % Sarcomere geometry (um) 
 sovr_ze = min(L_thick*0.5, Lsc_LV*0.5);
@@ -292,20 +294,24 @@ sigma_LV = -Kse*(Lsc_LV - Ls_LV);
 sigma_SEP = -Kse*(Lsc_SEP - Ls_SEP);
 sigma_RV = -Kse*(Lsc_RV - Ls_RV);
 
+% sigma_LV = sigma_XB_LV+sigma_pas_LV;
+% sigma_SEP = sigma_pas_SEP+sigma_XB_SEP;
+% sigma_RV = sigma_XB_RV +sigma_pas_RV;
+
 % Representative midwall tension (kPa cm)
 Tm_LV  = (Vw_LV  * sigma_LV  / (2 * Am_LV))  * (1 + (z_LV^2)/3  + (z_LV^4)/5); 
 Tm_SEP = (Vw_SEP * sigma_SEP / (2 * Am_SEP)) * (1 + (z_SEP^2)/3 + (z_SEP^4)/5); 
 Tm_RV  = (Vw_RV  * sigma_RV  / (2 * Am_RV))  * (1 + (z_RV^2)/3  + (z_RV^4)/5);
 
 % Axial midwall tension component (kPa cm)
-Tx_LV  = - Tm_LV  * 2 * xm_LV  * ym / (xm_LV^2  + ym^2); 
+Tx_LV  = Tm_LV  * 2 * xm_LV  * ym / (xm_LV^2  + ym^2); 
 Tx_SEP = Tm_SEP * 2 * xm_SEP * ym / (xm_SEP^2 + ym^2); 
 Tx_RV  = Tm_RV  * 2 * xm_RV  * ym / (xm_RV^2  + ym^2); 
 
 % Radial midwall tension component (kPa cm)
-Ty_LV  = Tm_LV  * (-xm_LV^2  + ym^2) / (xm_LV^2  + ym^2); 
-Ty_SEP = Tm_SEP * (-xm_SEP^2 + ym^2) / (xm_SEP^2 + ym^2); 
-Ty_RV  = Tm_RV  * (-xm_RV^2  + ym^2) / (xm_RV^2  + ym^2);
+Ty_LV  = Tm_LV  * ( xm_LV^2  - ym^2) / (xm_LV^2  + ym^2); 
+Ty_SEP = Tm_SEP * ( xm_SEP^2 - ym^2) / (xm_SEP^2 + ym^2); 
+Ty_RV  = Tm_RV  * ( xm_RV^2  - ym^2) / (xm_RV^2  + ym^2);
 
 % Ventricular pressure (kPa)
 ptrans_LV = 2 * Tx_LV / ym; 

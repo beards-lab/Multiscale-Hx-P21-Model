@@ -14,7 +14,7 @@ function [outputs,rout,J] = model_sol(adjpars,data)
 
 %% Initialization  
 
-plot_switch = 0; % 0 = off, 1 = on 
+plot_switch = 1; % 0 = off, 1 = on 
 
 % "undo" log from parameters.m
 adjpars = exp(adjpars); 
@@ -35,11 +35,11 @@ V_SA_u = fixpars(10);
 V_SV_u = fixpars(11); 
 V_PA_u = fixpars(12); 
 V_PV_u = fixpars(13); 
-
-V_SA_u = 0;
-V_SV_u = 0; 
-V_PA_u = 0; 
-V_PV_u = 0; 
+% 
+% V_SA_u = 0;
+% V_SV_u = 0; 
+% V_PA_u = 0; 
+% V_PV_u = 0; 
 
 % Compliance 
 C_SA = adjpars(1); 
@@ -285,9 +285,9 @@ displacements.xm_RV  = sols(:,3) ;
 displacements.ym     = sols(:,4) ; 
 
 % Convert cm to um
-lengths.Lsc_LV  = sols(:,5) * 1e4;
-lengths.Lsc_SEP = sols(:,6) * 1e4; 
-lengths.Lsc_RV  = sols(:,7) * 1e4; 
+lengths.Lsc_LV  = sols(:,5);
+lengths.Lsc_SEP = sols(:,6); 
+lengths.Lsc_RV  = sols(:,7); 
 
 % cm^3 = mL
 volumes.V_LV = sols(:,8); 
