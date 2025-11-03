@@ -83,16 +83,16 @@ for n = 1:length(selected_nx)
     pars = optparamsfile.pars;
     data = optparamsfile.data;
 
-    data.fixpars(18) = 12;
-    % data.fixpars(10:13) = 0; % no ustressed volumes!
-    data.fixpars(27) = 1e1;
-    % data.fixpars(10) = 500/7.5;
+    % data.fixpars(18) = 12;
+    % % data.fixpars(10:13) = 0; % no ustressed volumes!
+    % data.fixpars(27) = 1e1;
+    % % data.fixpars(10) = 500/7.5;
     epars = exp(pars);
-    epars(5) = 70;
-    % epars(3) = 0.2;
-    % epars(4) = 0.2;
-    % epars(7) = 0.01;
-    epars(6) = 30;
+    % epars(5) = 70;
+    % % epars(3) = 0.2;
+    % % epars(4) = 0.2;
+    % % epars(7) = 0.01;
+    % epars(6) = 30;
 
     pars = log(epars);
     

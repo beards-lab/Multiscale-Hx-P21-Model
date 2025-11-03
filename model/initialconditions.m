@@ -92,7 +92,7 @@ V_SA_0 = eta_Vtot*C_SA * P_SA_m;
 V_PA_0 = eta_Vtot*C_PA * P_PA_m;  
 
 % Create initial conditions vector 
-init = [xm_LV_0 ;xm_SEP_0 ;xm_RV_0 ;ym_0;           % 1-4
+init = [-xm_LV_0 ;xm_SEP_0 ;xm_RV_0 ;ym_0;           % 1-4
     Lsc_LV_0; Lsc_SEP_0; Lsc_RV_0;                  % 5-7
     V_LV_0; V_RV_0; V_SV_0; V_PV_0 ;V_SA_0 ;V_PA_0; % 8-13
     P1_0_LV; P1_1_LV; P1_2_LV ;P2_0_LV; P2_1_LV; P2_2_LV; P3_0_LV;P3_1_LV; P3_2_LV; N_LV; U_NR_LV;   % 14-24
@@ -101,10 +101,10 @@ init = [xm_LV_0 ;xm_SEP_0 ;xm_RV_0 ;ym_0;           % 1-4
 
 % Solve system of Triseg equations to determine consistent initialization
 % for DAE 
-x0   = log(init(1:4)); 
+x0   = init(1:4); 
 opts = optimoptions('fsolve','Display','off',...
     'MaxFunctionEvaluations',2e3); 
 xopt = fsolve(@(x) triseg(x,pars,data,init),x0,opts); 
-init(1:4) = exp(xopt(1:4)); 
+init(1:4) = xopt(1:4); 
 
 end 
